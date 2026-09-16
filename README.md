@@ -1,105 +1,60 @@
-# Les Fondamentaux de l'Intelligence Artificielle : 3IW
+# 🤖 Assistant Support Client - Projet IA (ESGI 3IW)
 
-Dépôt de travail du module de 21 heures, ESGI, 3e année d'ingénierie du web.
+Ce projet est une application web intégrant des fonctionnalités d'Intelligence Artificielle s'appuyant sur un modèle local via Ollama. Développé par Akasche MAHINTAN dans le cadre du module "Les Fondamentaux de l'IA" (ESGI), le backend est conçu en Python (FastAPI) et interagit avec un frontend moderne.
 
-Tout tourne sur votre machine avec des modèles locaux. **Aucun compte, aucune clé
-d'API, aucun paiement.**
+## 🚀 Fonctionnalités implémentées
 
-## Démarrer
+Tout au long de ce projet, plusieurs routes API ont été développées pour répondre à différents cas d'usage concrets de l'IA générative :
 
-À faire **avant la première séance**, chez vous : les téléchargements pèsent
-environ 2,5 Go.
+*   **S09 - Résumé de tickets (Streaming SSE) :**
+    *   **Route :** `POST /api/resumer`
+    *   Reçoit un texte brut et un paramètre de ton (neutre ou direct).
+    *   Génère un résumé en faisant appel au LLM local.
+    *   Renvoie la réponse au fil de l'eau à l'utilisateur grâce au protocole Server-Sent Events (SSE).
 
-Commencez par créer **votre propre copie privée** de ce dépôt : bouton
-**Use this template**, puis **Private**. Ne forkez pas : un fork d'un dépôt public
-est public, et votre travail serait visible par toute la promotion.
+*   **S10 - Assistant avec Appel d'Outil (Function Calling) :**
+    *   **Route :** `POST /api/assistant`
+    *   Permet au modèle d'interagir avec le code métier du serveur (boucle ReAct).
+    *   Le modèle analyse la question de l'utilisateur, détermine s'il doit utiliser l'outil `chercher_commande`, et renvoie les arguments. 
+    *   Le serveur valide les arguments, exécute la fonction, puis le modèle synthétise la réponse finale.
 
+*   **S13 - Moteur de Recherche Sémantique (RAG) :**
+    *   **Route :** `POST /api/documents`
+    *   **Pipeline complet :** Découpage du corpus documentaire, vectorisation (Embeddings), et recherche par similarité cosinus.
+    *   Le modèle répond à la question de l'utilisateur en se basant *strictement* sur les extraits pertinents trouvés, tout en citant ses sources.
+
+## 🎨 Interface Utilisateur
+
+Le frontend fourni initialement a bénéficié d'une refonte CSS complète pour adopter un design beaucoup plus professionnel et contemporain :
+*   **Dark Mode & Glassmorphism :** Interface nocturne inspirée des outils SaaS modernes avec effets de transparence et de flou.
+*   **UX Dynamique :** Animations de chargement au moment des requêtes, curseur IA clignotant, et boutons avec effets de survol.
+*   **Composants enrichis :** Badges stylisés pour afficher les sources (RAG) et les métriques de consommation des tokens.
+
+## 🛠️ Stack Technique
+
+*   **Backend :** Python, FastAPI
+*   **Modèle IA :** Ollama (LLM local type `qwen2.5:3b`, et modèle d'embeddings `paraphrase-multilingual`)
+*   **Frontend :** HTML5, CSS3 (Custom Dark Theme), JavaScript Vanilla
+*   **Protocoles :** API REST, Streaming SSE
+
+## ⚙️ Installation & Lancement
+
+### Prérequis
+* Python 3 installé.
+* Ollama installé et lancé en arrière-plan avec les modèles requis téléchargés (`ollama pull qwen2.5:3b` et `ollama pull paraphrase-multilingual`).
+
+### Lancement
 ```bash
-git clone <l'adresse de VOTRE copie>
-cd cours-ia-3iw
+# Installer les dépendances (une seule fois)
+make install
 
-make outils          # installe uv et Ollama s'ils sont absents
-make install         # environnement Python : tests, et FastAPI pour la voie Python
-make ollama-pull     # le socle du cours
-make setup-check     # diagnostic du poste (ou : make setup-check-node)
-```
+# Lancer le serveur de développement
+make app
 
-Le guide détaillé, avec la matrice modèle/machine et le dépannage, est dans
-[docs/installation-ollama.md](docs/installation-ollama.md).
+L'interface utilisateur est ensuite accessible sur http://localhost:3000.
 
-`make help` liste toutes les commandes.
+✅ Tests & Conformité
+Le projet inclut une suite de tests stricts (tests unitaires avec pytest) pour vérifier le respect des contrats d'API HTTP.
 
-## Choisir sa voie
-
-Le cours est bilingue. Vous écrivez votre serveur **dans la langue de votre
-choix** :
-
-| Voie | Dossier | Prérequis |
-| --- | --- | --- |
-| Python | `app/python/` | Python 3.11 ou plus |
-| JavaScript | `app/node/` | Node 20 ou plus, aucune dépendance npm |
-
-Ce qui est évalué est le **contrat HTTP** décrit dans
-[app/CONTRAT.md](app/CONTRAT.md), jamais votre code. Déclarez votre voie en début
-de projet et tenez-vous-y.
-
-## Comment on travaille
-
-Vous construisez **une seule application**, qui grandit au fil des séances. Elle
-est découpée en **un fichier par séance** : vous n'ouvrez que celui du jour.
-
-| Séance | Travail | Fichier |
-| --- | --- | --- |
-| 4 | installer son poste et relever son débit | `tp/00_setup/` |
-| 5 | améliorer un prompt, mesure à l'appui | `tp/05_prompt/` |
-| 9 | la route « résumer », TODO 1 à 5 | `app/<voie>/s09_resumer` |
-| 10 | l'assistant avec appel d'outil, TODO 6 à 8 | `app/<voie>/s10_assistant` |
-| 11 | comparer des modèles au banc d'essai | `tp/11_banc/` |
-| 13 | l'index de recherche, TODO 9 à 11 | `app/<voie>/s13_index` |
-| 13 | le pipeline RAG, TODO 12 | `app/<voie>/s13_documents` |
-
-Chaque fichier de séance commence par son objectif et la commande qui le
-vérifie. Tant qu'un TODO n'est pas écrit, sa route répond « à écrire ».
-
-Trois règles :
-
-1. **Ne modifiez pas `app/front/`.** Le front est commun à toute la promotion ; le
-   modifier est hors sujet.
-2. **Ne modifiez ni `main` ni le dossier `fourni/`.** Votre travail est dans les
-   fichiers de séance.
-3. **Le navigateur ne parle jamais au modèle.** Il parle à votre serveur, qui
-   parle au modèle.
-
-## Vérifier son travail
-
-Deux terminaux :
-
-```bash
-make app                     # terminal 1 : votre serveur (ou : make app-node)
-make conformite SEANCE=9     # terminal 2 : les tests de la séance du jour
-```
-
-`SEANCE=9`, `10` ou `13` ne lance que les tests de cette séance, et **exige**
-qu'elle soit écrite : un TODO oublié apparaît en rouge.
-
-Sans `SEANCE`, `make conformite` lance tout et ignore les routes pas encore
-écrites : vous voyez l'application passer au vert au fil du module. Pour le
-CC2, toutes les routes sont exigées.
-
-## Organisation du dépôt
-
-| Dossier | Contenu |
-| --- | --- |
-| `slides/` | les supports du cours, un PDF par bloc |
-| `app/` | l'application fil rouge : front, squelettes, données, contrat |
-| `tp/` | les ateliers ponctuels : diagnostic, prompt, banc d'essai |
-| `docs/` | installation et dépannage |
-| `examen/conformite/` | la suite de tests du contrat |
-
-## Évaluation
-
-| Épreuve | Format | Poids |
-| --- | --- | --- |
-| CC1 | écrit de 45 min, fin de séance 7 | 25 % |
-| CC2 | l'application, individuelle, rendu Git et démonstration de 5 min | 35 % |
-| Partiel | écrit de 1 h 30 | 40 % |
+# Lancer l'intégralité de la suite de tests
+make conformite
