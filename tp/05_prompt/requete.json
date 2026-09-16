@@ -1,0 +1,5 @@
+{
+  "model": "qwen2.5:3b",
+  "prompt": "Resume ce ticket en une phrase : L'utilisateur n'arrive pas à se connecter...",
+  "stream": false
+}
