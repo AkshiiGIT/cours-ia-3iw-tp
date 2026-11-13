@@ -27,7 +27,19 @@ MODELES_PAR_DEFAUT = ["qwen2.5:3b", "llama3.2:1b"]
 # COLLEZ ICI votre meilleure consigne de l'atelier de la seance 5.
 # C'est elle qu'on compare d'un modele a l'autre, sans la retoucher.
 # =====================================================================
-CONSIGNE = """A REMPLACER"""
+CONSIGNE = """Analyse le texte et réponds UNIQUEMENT par un objet JSON {"categorie": "paiement|livraison|compte", "urgence": 1|2|3}. Ne dis rien d'autre.
+
+Règles d'urgence strictes :
+1 : Simple question, demande de document, changer une adresse email ou passer en adresse pro.
+2 : Bug technique bloquant, page qui tourne dans le vide, paiement refusé, mot de passe/connexion HS, retard de colis de quelques jours (ex: 12 jours).
+3 : Fuite de données (emails d'un autre), vol (colis ouvert/boîte vide), double débit, prélèvement malgré annulation, retard extrême (3 semaines), adresse de livraison totalement fausse.
+
+Exemples de calibration :
+"Où puis-je modifier le numéro de téléphone de mon profil ?" => {"categorie": "compte", "urgence": 1}
+"Mon compte est bloqué après trois tentatives de connexion." => {"categorie": "compte", "urgence": 2}
+"Le bouton Payer ne réagit pas, je ne peux pas finaliser ma commande." => {"categorie": "paiement", "urgence": 2}
+"Ma carte est refusée à chaque tentative alors qu'elle fonctionne ailleurs." => {"categorie": "paiement", "urgence": 2}
+"Mon colis devait arriver il y a une semaine et le suivi ne bouge plus." => {"categorie": "livraison", "urgence": 2}"""
 
 
 def mesurer(modele, texte):
