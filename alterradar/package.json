@@ -1,0 +1,133 @@
+{
+  "name": "alterradar-desktop",
+  "productName": "AlterRADAR",
+  "version": "0.16.0",
+  "description": "AlterRADAR : recherche locale de stages et alternances, matching de CV, IA Ollama et validation Telegram",
+  "private": true,
+  "main": "electron/main.cjs",
+  "author": "Akasche MAHINTAN",
+  "license": "MIT",
+  "homepage": "https://github.com/AkshiiGIT/AlterRADAR",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AkshiiGIT/AlterRADAR.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AkshiiGIT/AlterRADAR/issues"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "test": "node --test tests/*.test.cjs",
+    "dist:mac": "electron-builder --mac dmg zip --x64 --arm64 --publish never",
+    "dist:win": "electron-builder --win nsis portable --x64 --arm64 --publish never",
+    "dist": "electron-builder",
+    "check:public": "node scripts/check-public.cjs",
+    "verify:release": "npm run test && npm run check:lock && npm run smoke:deps && npm run check:public",
+    "check:lock": "node scripts/verify-lock.cjs",
+    "audit:production": "npm audit --omit=dev --audit-level=high",
+    "audit:electron": "node scripts/audit-electron.cjs",
+    "smoke:deps": "node scripts/smoke-dependencies.cjs",
+    "diagnose:sources": "node scripts/diagnose-sources.cjs",
+    "diagnose:dates": "node scripts/diagnose-dates.cjs",
+    "self-test": "electron . --self-test",
+    "ia:serveur": "node serveur-ia/serveur.cjs",
+    "ia:chercher": "node serveur-ia/chercher.cjs",
+    "dates:diagnostic": "node scripts/diagnostic-dates.cjs"
+  },
+  "dependencies": {
+    "docx": "9.11.0",
+    "mammoth": "1.13.0",
+    "nodemailer": "10.1.7",
+    "pdf-parse": "2.4.5",
+    "pdfkit": "0.20.2"
+  },
+  "devDependencies": {
+    "electron": "44.9.3",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "fr.alterradar.desktop",
+    "productName": "AlterRADAR",
+    "files": [
+      "electron/**/*",
+      "renderer/**/*",
+      "lib/**/*",
+      "assets/**/*",
+      "config/**/*",
+      "package.json",
+      "README.md",
+      "INSTALLATION.md",
+      "docs/*.md",
+      "!docs/PUBLICATION_GITHUB.md"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "asar": true,
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.productivity",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "icon": "assets/icon.icns",
+      "identity": "-",
+      "artifactName": "AlterRADAR-${version}-macOS-${arch}.${ext}"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "artifactName": "AlterRADAR-${version}-Windows-${arch}-Setup.${ext}",
+      "buildUniversalInstaller": false
+    },
+    "portable": {
+      "artifactName": "AlterRADAR-${version}-Windows-${arch}-Portable.${ext}",
+      "buildUniversalInstaller": false
+    },
+    "artifactName": "AlterRADAR-${version}-${os}-${arch}.${ext}",
+    "copyright": "Copyright © 2026 Akasche MAHINTAN",
+    "asarUnpack": [
+      "**/node_modules/@napi-rs/**",
+      "**/node_modules/pdf-parse/**/pdf.worker*.mjs"
+    ]
+  },
+  "engines": {
+    "node": ">=24 <25"
+  }
+}

@@ -1,60 +1,65 @@
-# 🤖 Assistant Support Client - Projet IA (ESGI 3IW)
+# Les Fondamentaux de l'IA (ESGI 3IW) · rendu d'Akasche MAHINTAN
 
-Ce projet est une application web intégrant des fonctionnalités d'Intelligence Artificielle s'appuyant sur un modèle local via Ollama. Développé par Akasche MAHINTAN dans le cadre du module "Les Fondamentaux de l'IA" (ESGI), le backend est conçu en Python (FastAPI) et interagit avec un frontend moderne.
+Ce dépôt contient deux travaux :
 
-## 🚀 Fonctionnalités implémentées
+| Dossier | Quoi |
+| --- | --- |
+| `alterradar/` | **AlterRADAR**, mon projet présenté au CC2. Le prof a autorisé l'usage d'un projet existant. |
+| `app/python/` | Mon TP du module en Python (FastAPI), routes S09 à S13 sur le jeu de données du cours. |
 
-Tout au long de ce projet, plusieurs routes API ont été développées pour répondre à différents cas d'usage concrets de l'IA générative :
+## AlterRADAR : le projet du CC2
 
-*   **S09 - Résumé de tickets (Streaming SSE) :**
-    *   **Route :** `POST /api/resumer`
-    *   Reçoit un texte brut et un paramètre de ton (neutre ou direct).
-    *   Génère un résumé en faisant appel au LLM local.
-    *   Renvoie la réponse au fil de l'eau à l'utilisateur grâce au protocole Server-Sent Events (SSE).
+Application de bureau (Electron, Node.js) qui cherche des alternances et des stages adaptés au CV,
+prépare des candidatures avec une IA locale (Ollama, Qwen 2.5) et laisse l'étudiant valider chaque envoi.
 
-*   **S10 - Assistant avec Appel d'Outil (Function Calling) :**
-    *   **Route :** `POST /api/assistant`
-    *   Permet au modèle d'interagir avec le code métier du serveur (boucle ReAct).
-    *   Le modèle analyse la question de l'utilisateur, détermine s'il doit utiliser l'outil `chercher_commande`, et renvoie les arguments. 
-    *   Le serveur valide les arguments, exécute la fonction, puis le modèle synthétise la réponse finale.
+- Dépôt d'origine : <https://github.com/AkshiiGIT/AlterRADAR>. Le dossier `alterradar/` en est une copie de la version **0.16.0**.
+- Les trois fonctions du cours (résumer, assistant avec appel d'outil, RAG) sont dans `alterradar/lib/ia/`, utilisées par l'onglet **Assistant IA** et par un chatbot présent sur toutes les pages.
+- La correspondance fichier par fichier avec les TODO du cours, l'architecture et les règles du contrat sont détaillées dans [alterradar/serveur-ia/README.md](alterradar/serveur-ia/README.md).
 
-*   **S13 - Moteur de Recherche Sémantique (RAG) :**
-    *   **Route :** `POST /api/documents`
-    *   **Pipeline complet :** Découpage du corpus documentaire, vectorisation (Embeddings), et recherche par similarité cosinus.
-    *   Le modèle répond à la question de l'utilisateur en se basant *strictement* sur les extraits pertinents trouvés, tout en citant ses sources.
+### Vérifier le contrat HTTP
 
-## 🎨 Interface Utilisateur
+Aucune installation npm n'est nécessaire pour la partie IA (Node 20 ou plus suffit).
 
-Le frontend fourni initialement a bénéficié d'une refonte CSS complète pour adopter un design beaucoup plus professionnel et contemporain :
-*   **Dark Mode & Glassmorphism :** Interface nocturne inspirée des outils SaaS modernes avec effets de transparence et de flou.
-*   **UX Dynamique :** Animations de chargement au moment des requêtes, curseur IA clignotant, et boutons avec effets de survol.
-*   **Composants enrichis :** Badges stylisés pour afficher les sources (RAG) et les métriques de consommation des tokens.
-
-## 🛠️ Stack Technique
-
-*   **Backend :** Python, FastAPI
-*   **Modèle IA :** Ollama (LLM local type `qwen2.5:3b`, et modèle d'embeddings `paraphrase-multilingual`)
-*   **Frontend :** HTML5, CSS3 (Custom Dark Theme), JavaScript Vanilla
-*   **Protocoles :** API REST, Streaming SSE
-
-## ⚙️ Installation & Lancement
-
-### Prérequis
-* Python 3 installé.
-* Ollama installé et lancé en arrière-plan avec les modèles requis téléchargés (`ollama pull qwen2.5:3b` et `ollama pull paraphrase-multilingual`).
-
-### Lancement
 ```bash
-# Installer les dépendances (une seule fois)
-make install
+ollama pull qwen2.5:3b
+ollama pull paraphrase-multilingual
 
-# Lancer le serveur de développement
-make app
+node alterradar/serveur-ia/serveur.cjs      # terminal 1 : le serveur du contrat, port 3000
+make conformite                              # terminal 2 : la suite du cours
+```
 
-L'interface utilisateur est ensuite accessible sur http://localhost:3000.
+Résultat : **34 tests sur 35**, mode dégradé compris (Ollama éteint, puis `MODELE_INJOIGNABLE=1 make conformite`).
+Le test restant (`test_l_outil_est_reellement_appele`) demande où en est la commande `CMD-2024-118` du
+jeu de données du cours. Les outils d'AlterRADAR cherchent dans des **candidatures** (`chercher_candidature`,
+`bilan_candidatures`), pas dans des commandes : ce test est propre au domaine du TP, que couvre `app/python/`.
 
-✅ Tests & Conformité
-Le projet inclut une suite de tests stricts (tests unitaires avec pytest) pour vérifier le respect des contrats d'API HTTP.
+### Lancer l'application
 
-# Lancer l'intégralité de la suite de tests
-make conformite
+Le plus simple : télécharger l'installateur Windows ou macOS sur la page
+[Releases](https://github.com/AkshiiGIT/AlterRADAR/releases/latest). Depuis les sources (Node 24) :
+
+```bash
+cd alterradar
+npm install
+npm start          # l'application
+npm test           # ses 219 tests
+```
+
+Au premier lancement, un guide pas à pas installe Ollama, choisit le modèle adapté à la mémoire de
+l'ordinateur et importe le CV.
+
+## TP Python (séances 9 à 13)
+
+Backend FastAPI qui s'appuie sur un modèle local via Ollama, sur le jeu de données du cours (support client).
+
+- **S09, résumé de tickets en streaming SSE** (`POST /api/resumer`) : reçoit un texte et un ton (neutre ou direct), renvoie le résumé au fil de l'eau.
+- **S10, assistant avec appel d'outil** (`POST /api/assistant`) : le modèle décide d'appeler l'outil `chercher_commande`, le serveur valide les arguments, exécute la fonction, puis le modèle rédige la réponse finale.
+- **S13, recherche sémantique (RAG)** (`POST /api/documents`) : découpage du corpus, embeddings, similarité cosinus. Le modèle répond à partir des extraits trouvés et cite ses sources.
+
+Stack : Python, FastAPI, Ollama (`qwen2.5:3b` et `paraphrase-multilingual`), le front fourni par le cours.
+
+```bash
+make install       # dépendances, une seule fois
+make app           # serveur sur http://localhost:3000
+make conformite    # suite de tests du contrat, dans un second terminal
+```
